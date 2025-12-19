@@ -1,200 +1,210 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>可唯美學 Kewi Beauty | VIP 寵愛扭蛋機</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <script src="https://unpkg.com/lucide@latest"></script>
+import React, { useState, useEffect } from 'react';
+import { Sparkles, Gift, X, Star, Snowflake, Heart, RefreshCw } from 'lucide-react';
 
-    <style>
-        @keyframes machine-shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px) rotate(-1deg); }
-            75% { transform: translateX(5px) rotate(1deg); }
-        }
-        .animate-machine-shake { animation: machine-shake 0.2s infinite; }
+const ChristmasGiftV12 = () => {
+  const [gameState, setGameState] = useState('idle'); // idle, shaking, opening, result
+  const [result, setResult] = useState(null);
+  const [activeId, setActiveId] = useState(null);
+  const [snowflakes, setSnowflakes] = useState([]);
+
+  // ★ 獎項設定 ★
+  const prizes = [
+    { id: 1, name: "頭獎：健胸激實霜 (乙罐)", desc: "頂級賦活，極致緊實", type: "grand", color: "text-rose-700", bg: "bg-rose-50", weight: 1 },
+    { id: 2, name: "二獎：美胸賦活乳霜 (乙條)", desc: "彈潤滋養，柔嫩呵護", type: "grand", color: "text-pink-700", bg: "bg-pink-50", weight: 2 },
+    { id: 3, name: "三獎：按摩精油 (乙罐)", desc: "芳療舒壓，身心平衡", type: "grand", color: "text-amber-700", bg: "bg-amber-50", weight: 3 },
+    { id: 4, name: "5折 驚喜優惠", desc: "聖誕奇蹟，半價寵愛", type: "discount", color: "text-purple-700", bg: "bg-purple-50", weight: 1 },
+    { id: 9, name: "9折 優惠券", desc: "小確幸折扣，立即使用", type: "discount", color: "text-teal-700", bg: "bg-teal-50", weight: 25 },
+    { id: 10, name: "95折 優惠券", desc: "體驗折扣，輕鬆入手", type: "discount", color: "text-teal-700", bg: "bg-teal-50", weight: 30 },
+    { id: 11, name: "小禮：熱敷眼罩 (乙片)", desc: "舒緩眼壓，暖暖入睡", type: "gift", color: "text-orange-700", bg: "bg-orange-50", weight: 35 },
+    { id: 12, name: "小禮：熱敷貼 (乙片)", desc: "暖宮暖身，隨身呵護", type: "gift", color: "text-orange-700", bg: "bg-orange-50", weight: 35 },
+    { id: 13, name: "小禮：甜蜜糖果罐", desc: "金沙/糖果，甜在心頭", type: "gift", color: "text-orange-700", bg: "bg-orange-50", weight: 35 },
+  ];
+
+  useEffect(() => {
+    const flakes = Array.from({ length: 25 }).map((_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      animDuration: 8 + Math.random() * 5 + 's',
+      delay: Math.random() * 5 + 's',
+      opacity: 0.3 + Math.random() * 0.5,
+      size: 8 + Math.random() * 8
+    }));
+    setSnowflakes(flakes);
+  }, []);
+
+  // ★ V12 修正版聖誕樹：星星回歸 ★
+  const KawaiiTree = () => (
+    <svg viewBox="0 0 200 260" className="w-full h-full drop-shadow-xl animate-float-slow">
+        {/* 樹幹 */}
+        <path d="M85 250 L85 180 L115 180 L115 250 Z" fill="#b45309" stroke="#92400e" strokeWidth="2" strokeLinejoin="round" />
         
-        @keyframes balls-tumble {
-            0% { transform: translateY(0) rotate(0); }
-            50% { transform: translateY(-30px) rotate(180deg); }
-            100% { transform: translateY(0) rotate(360deg); }
-        }
-        .animate-balls-tumble { animation: balls-tumble 0.4s infinite; }
+        {/* 樹體 */}
+        <path d="M20 190 C20 190, 50 160, 100 160 C150 160, 180 190, 180 190 C180 190, 150 220, 100 220 C50 220, 20 190, 20 190 Z" fill="#6ee7b7" stroke="#059669" strokeWidth="2" strokeLinejoin="round" />
+        <path d="M40 140 C40 140, 60 110, 100 110 C140 110, 160 140, 160 140 C160 140, 130 170, 100 170 C70 170, 40 140, 40 140 Z" fill="#34d399" stroke="#059669" strokeWidth="2" strokeLinejoin="round" />
+        <path d="M60 90 C60 90, 70 50, 100 50 C130 50, 140 90, 140 90 C140 90, 120 120, 100 120 C80 120, 60 90, 60 90 Z" fill="#10b981" stroke="#059669" strokeWidth="2" strokeLinejoin="round" />
+        
+        {/* 高光 */}
+        <path d="M40 190 Q50 180 60 190" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" opacity="0.3" />
+        <path d="M60 140 Q70 130 80 140" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" opacity="0.3" />
+        <path d="M80 90 Q90 80 100 90" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" opacity="0.3" />
 
-        @keyframes pop-in {
-            0% { transform: scale(0) translateY(-50px); opacity: 0; }
-            70% { transform: scale(1.2) translateY(5px); opacity: 1; }
-            100% { transform: scale(1) translateY(0); opacity: 1; }
-        }
-        .animate-pop-in { animation: pop-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        {/* 頂部星星 (Star Shape) */}
+        <path d="M100 25 L106 40 L122 40 L110 50 L114 65 L100 55 L86 65 L90 50 L78 40 L94 40 Z" fill="#fbbf24" stroke="#f59e0b" strokeWidth="1.5" className="animate-pulse" />
+        
+        {/* 裝飾彩帶 */}
+        <path d="M50 170 Q100 190 150 170" fill="none" stroke="#fcd34d" strokeWidth="3" strokeLinecap="round" opacity="0.6" />
+        <path d="M70 120 Q100 140 130 120" fill="none" stroke="#fcd34d" strokeWidth="3" strokeLinecap="round" opacity="0.6" />
+    </svg>
+  );
 
-        @keyframes soft-pulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(244, 114, 182, 0); }
-            50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(244, 114, 182, 0.3); }
-        }
-        .animate-soft-pulse { animation: soft-pulse 2s infinite; }
+  // ★ 裝飾球 (Burst Effect) ★
+  const BurstOrnament = ({ id, color, x, y, onClick, state }) => {
+    const isTarget = state.activeId === id;
+    const isPopping = state.gameState !== 'idle' && isTarget;
 
-        body { background-color: #FFF0F5; overflow: hidden; }
-    </style>
-</head>
-<body>
-    <div id="root"></div>
-
-    <script type="text/babel">
-        const { useState, useEffect } = React;
-        // 使用 Lucide 圖示的小工具
-        const Icon = ({ name, ...props }) => {
-            const LucideIcon = lucide.icons[name[0].toUpperCase() + name.slice(1)];
-            return LucideIcon ? <span dangerouslySetInnerHTML={{ __html: lucide.createIcons.icons[name] }} {...props} /> : null;
-        };
-
-        const App = () => {
-            const [status, setStatus] = useState('idle'); 
-            const [result, setResult] = useState(null);
-            const [rotation, setRotation] = useState(0);
-
-            const prizes = [
-                { id: 1, name: "美胸律動儀", target: "胸型困擾、循環堵塞者", detail: "透過罩杯式吸放，進行被動式按摩運動，舒緩胸腹部肌肉緊繃。", color: "pink" },
-                { id: 2, name: "耳燭頭刮", target: "頭痛失眠、思緒雜亂者", detail: "放鬆頭部與耳周緊繃，安穩一夜好眠。", color: "orange" },
-                { id: 3, name: "美體儀", target: "體態鬆弛、浮腫明顯者", detail: "多功能探頭搭配操作，依部位需求靈活選擇。", color: "purple" },
-                { id: 4, name: "熱導膜", target: "吸收差、營養補充者", detail: "搭配熱效能導入保養精華，滋養滲透胸腹部。", color: "yellow" },
-                { id: 5, name: "熱石按摩", target: "肩背僵硬、畏寒手涼者", detail: "深層傳導熱能，舒緩壓力讓身體暖起來。", color: "red" },
-                { id: 6, name: "去角質", target: "肌膚粗糙、不易吸收者", detail: "幫助精油與保養精華更好吸收，提升保養效果。", color: "teal" },
-                { id: 7, name: "暖腹臍燭", target: "宮寒、腸胃蠕動較差者", detail: "從肚臍深層傳遞溫熱感，柔和包圍內臟區域，搭配按壓手法效果佳。", color: "rose" },
-                { id: 8, name: "暖芯墊", target: "寒性體質、代謝偏弱者", detail: "溫熱墊鋪於背腹部，深入肌底溫暖全身。", color: "indigo" },
-                { id: 9, name: "暖身袋", target: "手腳冰冷、容易水腫者", detail: "如溫熱睡袋般包覆全身，透過熱能引導自然排汗。", color: "blue" },
-                { id: 10, name: "太空艙", target: "全身循環差、需爆汗者", detail: "如桑拿般包覆全身，透過釋放恆溫熱感，熱能引導自然排汗。", color: "green" },
-            ];
-
-            const decorativeBalls = [
-                { color: "bg-red-300", top: "top-10", left: "left-4" },
-                { color: "bg-blue-300", top: "top-20", left: "left-12" },
-                { color: "bg-yellow-300", top: "top-12", left: "right-6" },
-                { color: "bg-green-300", top: "top-24", left: "right-12" },
-                { color: "bg-purple-300", top: "top-4", left: "left-1/2" },
-                { color: "bg-pink-300", top: "bottom-4", left: "left-8" },
-                { color: "bg-orange-300", top: "bottom-8", left: "right-8" },
-            ];
-
-            useEffect(() => {
-                lucide.createIcons();
-            }, [status]);
-
-            const handlePlay = () => {
-                if (status !== 'idle') return;
-                setStatus('spinning');
-                const randomIndex = Math.floor(Math.random() * prizes.length);
-                setResult(prizes[randomIndex]);
-
-                setTimeout(() => {
-                    setStatus('dropped');
-                    setTimeout(() => { setStatus('result'); }, 800); 
-                }, 1500); 
-            };
-
-            const getColorClass = (colorName, type) => {
-                const map = {
-                    rose: { bg: "bg-gradient-to-br from-rose-500 to-rose-400", text: "text-rose-600", light: "bg-rose-50" },
-                    pink: { bg: "bg-gradient-to-br from-pink-500 to-pink-400", text: "text-pink-600", light: "bg-pink-50" },
-                    indigo: { bg: "bg-gradient-to-br from-indigo-500 to-indigo-400", text: "text-indigo-600", light: "bg-indigo-50" },
-                    orange: { bg: "bg-gradient-to-br from-orange-500 to-orange-400", text: "text-orange-600", light: "bg-orange-50" },
-                    yellow: { bg: "bg-gradient-to-br from-yellow-400 to-amber-300", text: "text-yellow-700", light: "bg-yellow-50" },
-                    green: { bg: "bg-gradient-to-br from-emerald-500 to-emerald-400", text: "text-emerald-600", light: "bg-emerald-50" },
-                    purple: { bg: "bg-gradient-to-br from-purple-500 to-purple-400", text: "text-purple-600", light: "bg-purple-50" },
-                    teal: { bg: "bg-gradient-to-br from-teal-500 to-teal-400", text: "text-teal-600", light: "bg-teal-50" },
-                    blue: { bg: "bg-gradient-to-br from-blue-500 to-blue-400", text: "text-blue-600", light: "bg-blue-50" },
-                    red: { bg: "bg-gradient-to-br from-red-500 to-red-400", text: "text-red-600", light: "bg-red-50" },
-                };
-                return map[colorName]?.[type] || map.pink[type];
-            };
-
-            const getLineUrl = () => {
-                const message = `我今天在可唯美學扭蛋機抽到了「${result?.name}」✨\n想要現場預約兌換！`;
-                return `https://line.me/R/oaMessage/@kewibeauty/?${encodeURIComponent(message)}`;
-            };
-
-            return (
-                <div className="h-screen w-full flex flex-col items-center justify-center p-4 relative selection:bg-pink-200">
-                    {/* 夢幻背景 */}
-                    <div className="absolute inset-0 opacity-60 pointer-events-none">
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-pink-200 via-white to-purple-100 rounded-full blur-3xl"></div>
-                    </div>
-
-                    {/* Header */}
-                    <div className={`z-10 text-center mb-6 transition-all duration-700 ${status === 'result' ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}>
-                        <div className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-white/90 backdrop-blur-md rounded-full shadow-sm mb-3 border border-pink-200">
-                            <i data-lucide="crown" className="w-4 h-4 text-yellow-500 fill-yellow-500"></i>
-                            <span className="text-pink-600 font-bold tracking-widest text-xs">VIP 尊榮專屬</span>
-                        </div>
-                        <h1 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-purple-600">今日寵愛扭蛋</h1>
-                    </div>
-
-                    {/* 扭蛋機本體 */}
-                    <div className={`relative z-10 w-[280px] transition-all duration-700 ${status === 'result' ? 'blur-sm scale-90 opacity-50' : ''}`}>
-                        <div className="h-16 bg-pink-500 rounded-t-[60px] relative border-b-4 border-pink-600/20 shadow-lg"></div>
-                        <div className={`h-[220px] bg-white/40 backdrop-blur-sm border-x-4 border-pink-300 relative overflow-hidden flex items-center justify-center ${status === 'spinning' ? 'animate-machine-shake' : ''}`}>
-                             <div className={`absolute inset-0 ${status === 'spinning' ? 'animate-balls-tumble' : ''}`}>
-                                {decorativeBalls.map((ball, idx) => (
-                                    <div key={idx} className={`absolute w-10 h-10 rounded-full border border-white shadow-sm ${ball.color} ${ball.top} ${ball.left}`}></div>
-                                ))}
-                            </div>
-                            <div className="bg-white/90 px-4 py-2 rounded-xl shadow-lg z-20 text-center border-2 border-pink-100">
-                                <div className="text-pink-500 font-black text-lg">可唯美學</div>
-                                <div className="text-[8px] text-gray-400 font-bold tracking-widest uppercase">Kewi Beauty</div>
-                            </div>
-                        </div>
-                        <div className="h-32 bg-pink-500 rounded-b-[40px] relative flex flex-col items-center pt-4">
-                            <div className={`w-16 h-16 bg-white rounded-full border-4 border-pink-200 shadow-lg flex items-center justify-center cursor-pointer transition-transform duration-1000 ${status === 'spinning' ? 'rotate-[720deg]' : ''} ${status === 'idle' ? 'animate-soft-pulse' : ''}`} onClick={handlePlay}>
-                                <div className="w-12 h-2 bg-yellow-400 rounded-full"></div>
-                            </div>
-                            <div className="absolute bottom-2 w-24 h-12 bg-pink-600/30 rounded-t-xl">
-                                {status === 'dropped' && (
-                                    <div className="w-10 h-10 mx-auto mt-1 rounded-full bg-yellow-400 border-2 border-white animate-pop-in"></div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* 結果彈窗 */}
-                    {status === 'result' && result && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-pink-900/20 backdrop-blur-md animate-in fade-in duration-500">
-                            <div className="bg-white rounded-[40px] w-full max-w-sm overflow-hidden shadow-2xl relative animate-pop-in">
-                                <div className={`h-32 ${getColorClass(result.color, 'bg')} flex items-center justify-center relative`}>
-                                    <i data-lucide="sparkles" className="absolute top-4 left-4 text-white/40 w-8 h-8"></i>
-                                    <div className="bg-white/20 p-4 rounded-full backdrop-blur-sm">
-                                        <i data-lucide="gift" className="w-12 h-12 text-white"></i>
-                                    </div>
-                                </div>
-                                <div className="p-8 text-center">
-                                    <h3 className={`text-2xl font-black mb-2 ${getColorClass(result.color, 'text')}`}>
-                                        獲得：{result.name}
-                                    </h3>
-                                    <p className="text-gray-500 text-sm mb-6 leading-relaxed">
-                                        {result.detail}
-                                    </p>
-                                    <a href={getLineUrl()} target="_blank" className={`w-full py-4 rounded-2xl text-white font-bold flex items-center justify-center gap-2 shadow-lg hover:brightness-105 transition-all ${getColorClass(result.color, 'bg')}`}>
-                                        立即預約兌換 <i data-lucide="arrow-right" className="w-5 h-5"></i>
-                                    </a>
-                                    <button onClick={() => setStatus('idle')} className="mt-4 text-gray-400 text-sm font-medium">
-                                        再玩一次
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+    if (isPopping) {
+        return (
+            <div className="absolute w-12 h-12 z-30 pointer-events-none" style={{ left: `${x}%`, top: ${y}% }}>
+                <div className="absolute inset-0 flex items-center justify-center animate-pop-vanish">
+                    <Sparkles className="text-white w-full h-full fill-white" />
                 </div>
-            );
-        };
+            </div>
+        );
+    }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
-</body>
-</html>
+    return (
+        <div 
+            onClick={() => onClick(id)}
+            className="absolute w-10 h-10 cursor-pointer transform transition-transform hover:scale-125 hover:brightness-110 z-20"
+            style={{ left: `${x}%`, top: ${y}% }}
+        >
+            <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+                <line x1="50" y1="0" x2="50" y2="10" stroke="white" strokeWidth="2" />
+                <circle cx="50" cy="55" r="40" fill={color} stroke="white" strokeWidth="2" />
+                <circle cx="35" cy="40" r="10" fill="white" opacity="0.5" />
+            </svg>
+        </div>
+    );
+  };
+
+  // ★ 禮物盒 (Jump & Explode) ★
+  const JumpGiftBox = ({ id, color, ribbon, onClick, state }) => {
+    const isTarget = state.activeId === id;
+    const isOpening = state.gameState === 'opening' && isTarget;
+    const isShaking = state.gameState === 'shaking' && isTarget;
+
+    const colors = {
+      rose: { box: "#fbcfe8", ribbon: "#db2777" },
+      gold: { box: "#fef3c7", ribbon: "#d97706" },
+      blue: { box: "#bae6fd", ribbon: "#2563eb" }
+    };
+    const c = colors[color];
+
+    return (
+      <div 
+        onClick={() => onClick(id)}
+        className={`relative w-24 h-24 cursor-pointer z-20 transition-transform ${!isOpening && !isShaking ? 'hover:scale-110' : ''}`}
+        style={{
+             animation: isShaking ? 'jump-ready 0.6s ease-in-out' : undefined
+        }}
+      >
+        <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+           <rect x="15" y="40" width="70" height="50" rx="6" fill={c.box} stroke="white" strokeWidth="2" />
+           <rect x="45" y="40" width="10" height="50" fill={c.ribbon} opacity="0.8" />
+           
+           <g className={isOpening ? 'animate-lid-fly-off' : ''} style={{transformOrigin: '50% 40%'}}>
+              <rect x="10" y="30" width="80" height="15" rx="4" fill={c.box} stroke="white" strokeWidth="2" />
+              <rect x="45" y="30" width="10" height="15" fill={c.ribbon} />
+              <circle cx="50" cy="30" r="6" fill={c.ribbon} />
+              <path d="M50 30 Q30 10 10 30 Q30 45 50 35" fill={c.ribbon} />
+              <path d="M50 30 Q70 10 90 30 Q70 45 50 35" fill={c.ribbon} />
+           </g>
+
+           {isOpening && (
+               <g className="animate-confetti">
+                   <circle cx="20" cy="40" r="3" fill="#fcd34d" />
+                   <circle cx="80" cy="40" r="3" fill="#f472b6" />
+                   <rect x="40" y="30" width="4" height="4" fill="#60a5fa" transform="rotate(45)" />
+                   <rect x="60" y="25" width="4" height="4" fill="#34d399" transform="rotate(20)" />
+               </g>
+           )}
+        </svg>
+      </div>
+    );
+  };
+
+  const handleInteraction = (id) => {
+    if (gameState !== 'idle') return;
+    setActiveId(id);
+
+    const isBall = id.includes('ball');
+    const totalWeight = prizes.reduce((sum, item) => sum + item.weight, 0);
+    let randomNum = Math.random() * totalWeight;
+    let selected = prizes[0];
+    for (let p of prizes) {
+        if (randomNum < p.weight) {
+            selected = p;
+            break;
+        }
+        randomNum -= p.weight;
+    }
+    setResult(selected);
+
+    if (isBall) {
+        setGameState('opening'); 
+        setTimeout(() => setGameState('result'), 600);
+    } else {
+        setGameState('shaking'); 
+        setTimeout(() => {
+            setGameState('opening'); 
+            setTimeout(() => setGameState('result'), 1000);
+        }, 600);
+    }
+  };
+
+  const resetGame = () => {
+    setGameState('idle');
+    setResult(null);
+    setActiveId(null);
+  };
+
+  const getLineUrl = () => {
+    if (!result) return "#";
+    const message = `我在可唯美學聖誕驚喜抽到了【${result.name}】🎁\n想要現場兌換！`;
+    return `https://line.me/R/oaMessage/@kewibeauty/?${encodeURIComponent(message)}`;
+  };
+
+  return (
+    <div className="h-screen w-full flex flex-col items-center justify-center p-4 relative overflow-hidden font-serif select-none bg-[#fdfcf8]">
+        
+        {/* 背景 */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#fdfcf8] to-[#fff1f2]"></div>
+        <div className="absolute inset-0 pointer-events-none opacity-30" style={{backgroundImage: 'radial-gradient(#fecdd3 1px, transparent 1px)', backgroundSize: '16px 16px'}}></div>
+        
+        {/* 飄雪 */}
+        <div className="absolute inset-0 pointer-events-none">
+            {snowflakes.map(flake => (
+                <div 
+                    key={flake.id}
+                    className="absolute text-rose-200"
+                    style={{
+                        left: `${flake.left}%`,
+                        animation: `snow ${flake.animDuration} linear infinite`,
+                        animationDelay: flake.delay,
+                        opacity: flake.opacity,
+                        fontSize: `${flake.size}px`,
+                        top: '-20px'
+                    }}
+                >
+                    ❄
+                </div>
+            ))}
+        </div>
+
+        {/* Header (淡出) */}
+        <div className={`z-10 text-center mb-2 relative transition-all duration-500 ${gameState === 'result' ? 'opacity-0 translate-y-[-20px]' : 'opacity-100'}`}>
+            <div className="inline-flex items-center gap-2 px-5 py-1.5 bg-white/70 backdrop-blur-md rounded-full mb-3 border border-rose-200 shadow-sm">
+               <Gift size={12} className="text-rose-500"/>
+               <span className="text-rose-900 text-[10px] tracking-[0.2em] font-medium">MERRY CHRISTMAS</span>
+            </div>
+            <h1 className="text-3xl text-gray-800 tracking-[0.1em] mb-2 font-bold drop-shadow-sm text-rose-950">聖誕驚喜
